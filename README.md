@@ -22,7 +22,23 @@ cd billing_system
 bundle install
 ```
 
-3. Setup database
+3. Setup environment variables
+```bash
+cp .env.example .env
+# Edit .env file with your PostgreSQL password
+```
+
+4. Setup PostgreSQL
+```bash
+# Create PostgreSQL user (if needed)
+sudo -u postgres createuser -s billing_system
+sudo -u postgres psql -c "ALTER USER billing_system PASSWORD 'your_password';"
+
+# Or use existing postgres user
+# Update .env with: BILLING_SYSTEM_DATABASE_PASSWORD=your_postgres_password
+```
+
+5. Setup database
 ```bash
 rails db:create
 rails db:migrate
