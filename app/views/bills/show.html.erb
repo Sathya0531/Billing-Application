@@ -1,11 +1,63 @@
-<h1>Bill Details</h1>
+<h1>Billing Summary</h1>
 
-<p><strong>Amount:</strong> <%= @bill.amount %></p>
-<p><strong>Created:</strong> <%= @bill.created_at %></p>
+<div class="customer-info">
+  <h3>Customer Email: <%= @bill.customer_email %></h3>
+</div>
 
-<% if @change_breakdown %>
-  <h3>Change Breakdown:</h3>
-  <% @change_breakdown.each do |denomination, count| %>
-    <p><%= denomination %>: <%= count %> notes</p>
-  <% end %>
+<hr>
+
+<h3>Bill Items</h3>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Product ID</th>
+      <th>Unit Price</th>
+      <th>Quantity</th>
+      <th>Purchase Price</th>
+      <th>Tax %</th>
+      <th>Tax Payable</th>
+      <th>Total Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @bill.bill_items.each do |item| %>
+      <tr>
+        <td><%= item.product.product_code %></td>
+        <td>₹<%= item.unit_price %></td>
+        <td><%= item.quantity %></td>
+        <td>₹<%= (item.unit_price * item.quantity).round(2) %></td>
+        <td><%= item.product.tax_percentage %>%</td>
+        <td>₹<%= item.tax_amount.round(2) %></td>
+        <td>₹<%= item.total_price.round(2) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<hr>
+
+<h3>Totals</h3>
+<div class="totals">
+  <p><strong>Total price without tax:</strong> ₹<%= @bill.total_price.round(2) %></p>
+  <p><strong>Total tax payable:</strong> ₹<%= @bill.total_tax.round(2) %></p>
+  <p><strong>Net price of purchased items:</strong> ₹<%= @bill.net_price.round(2) %></p>
+  <p><strong>Rounded down net price:</strong> ₹<%= @bill.rounded_price %></p>
+  <p><strong>Amount paid by customer:</strong> ₹<%= @bill.amount_paid %></p>
+  <p><strong>Balance payable to customer:</strong> ₹<%= @bill.balance.round(2) %></p>
+</div>
+
+<% if @change_breakdown.any? %>
+  <hr>
+  
+  <h3>Balance Denominations</h3>
+  <div class="change-breakdown">
+    <% @change_breakdown.each do |denomination, count| %>
+      <p>₹<%= denomination %> → <%= count %> notes</p>
+    <% end %>
+  </div>
 <% end %>
+
+<div class="actions">
+  <%= link_to "New Bill", new_bill_path, class: "btn btn-primary" %>
+  <%= link_to "Bill History", bills_path, class: "btn btn-secondary" %>
+</div>

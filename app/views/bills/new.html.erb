@@ -1,12 +1,99 @@
-<h1>New Bill</h1>
+<div class="page-header">
+  <h1>Billing System</h1>
+  <%= link_to "← Back to History", bills_path, class: "btn btn-secondary" %>
+</div>
 
-<%= form_with model: @bill, local: true do |form| %>
-  <div class="field">
-    <%= form.label :amount %>
-    <%= form.number_field :amount, step: :any %>
+<%= form_with model: @bill, local: true do |f| %>
+  <% if flash[:error] %>
+    <div class="alert alert-danger"><%= flash[:error] %></div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :customer_email, "Customer Email" %>
+    <%= f.email_field :customer_email, required: true, class: "form-control" %>
   </div>
 
-  <div class="actions">
-    <%= form.submit "Create Bill" %>
+  <hr>
+
+  <h3>Bill Section</h3>
+  <div id="bill-items">
+    <div class="bill-item">
+      <label>Product ID:</label>
+      <input type="text" name="bill_items[0][product_code]" required>
+      
+      <label>Quantity:</label>
+      <input type="number" name="bill_items[0][quantity]" min="1" required>
+    </div>
+  </div>
+
+  <button type="button" id="add-new-btn">Add New</button>
+
+  <hr>
+
+  <h3>Denominations</h3>
+  <div class="denominations">
+    <% [500, 50, 20, 10, 5, 2, 1].each do |value| %>
+      <% denomination = @denominations.find { |d| d.value == value } %>
+      <div class="denomination-item">
+        <label><%= value %>:</label>
+        <input type="number" name="denominations[<%= denomination&.id %>]" min="0" placeholder="Count" data-value="<%= value %>" onchange="updateAmountPaid()">
+      </div>
+    <% end %>
+  </div>
+
+  <hr>
+
+  <div class="form-group">
+    <%= f.label :amount_paid, "Cash Paid by Customer" %>
+    <%= f.number_field :amount_paid, step: :any, class: "form-control", id: "amount_paid", readonly: true %>
+  </div>
+
+  <div class="form-actions">
+    <button type="button" onclick="resetForm()">Cancel</button>
+    <%= f.submit "Generate Bill", class: "btn btn-primary" %>
   </div>
 <% end %>
+
+<script>
+let itemCount = 1;
+
+document.getElementById('add-new-btn').addEventListener('click', function() {
+  const container = document.getElementById('bill-items');
+  const newItem = document.createElement('div');
+  newItem.className = 'bill-item';
+  newItem.innerHTML = `
+    <label>Product ID:</label>
+    <input type="text" name="bill_items[${itemCount}][product_code]" required>
+    
+    <label>Quantity:</label>
+    <input type="number" name="bill_items[${itemCount}][quantity]" min="1" required>
+    
+    <button type="button" onclick="this.parentElement.remove()">Remove</button>
+  `;
+  container.appendChild(newItem);
+  itemCount++;
+});
+
+function resetForm() {
+  document.querySelector('form').reset();
+  const items = document.querySelectorAll('.bill-item');
+  for (let i = 1; i < items.length; i++) {
+    items[i].remove();
+  }
+  itemCount = 1;
+  updateAmountPaid();
+}
+
+function updateAmountPaid() {
+  let total = 0;
+  const denominationInputs = document.querySelectorAll('input[data-value]');
+  
+  denominationInputs.forEach(input => {
+    const count = parseInt(input.value) || 0;
+    const value = parseInt(input.dataset.value);
+    total += count * value;
+  });
+  
+  document.getElementById('amount_paid').value = total;
+}
+</script>
