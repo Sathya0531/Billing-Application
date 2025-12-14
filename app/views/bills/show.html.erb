@@ -1,0 +1,11 @@
+<h1>Bill Details</h1>
+
+<p><strong>Amount:</strong> <%= @bill.amount %></p>
+<p><strong>Created:</strong> <%= @bill.created_at %></p>
+
+<% if @change_breakdown %>
+  <h3>Change Breakdown:</h3>
+  <% @change_breakdown.each do |denomination, count| %>
+    <p><%= denomination %>: <%= count %> notes</p>
+  <% end %>
+<% end %>

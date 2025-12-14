@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  customer_email: MyString
+  total_price: 1.5
+  total_tax: 1.5
+  net_price: 1.5
+  rounded_price: 1.5
+  amount_paid: 1.5
+  balance: 1.5
+
+two:
+  customer_email: MyString
+  total_price: 1.5
+  total_tax: 1.5
+  net_price: 1.5
+  rounded_price: 1.5
+  amount_paid: 1.5
+  balance: 1.5
